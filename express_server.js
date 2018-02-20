@@ -41,8 +41,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let new_key = generateRandomString();
+  urlDatabase[new_key] = req.body.longURL;  
+  res.redirect(`/urls/${new_key}`);         
 });
 
 app.get("/urls/:id", (req, res) => {
