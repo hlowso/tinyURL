@@ -4,6 +4,8 @@
   <% include ./partials/_header %>
 </head>
 <body>
-    <%= urls[shortURL] %> - <%= shortURL %>
+    <form action="/urls/<%= shortURL %>" method="post">
+    	<%=urls[shortURL]%> - <%=shortURL%> <input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update">
+    </form>
 </body>
 </html>
