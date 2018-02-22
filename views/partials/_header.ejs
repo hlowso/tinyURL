@@ -1,1 +1,11 @@
-<title>TinyApp</title>
+<header>
+  <div style="display: table; height: 20px">
+  	<% if(typeof user !== 'undefined') { %><div style="display: table-cell; float: right"><%=user.email%> <form action="/logout" method="post"><input type="submit" value="logout"></form></div>
+  	<% } else if (typeof links !== 'undefined'){ %><div style="display: table-cell; float: right"><a href="/login">login</a><a href="/register">sign up</a></div><% } %>
+  <div>
+ 	 <div style="clear: right">
+ 		<center>
+    	<h2>Tiny URL (ver 1.0.0)</h2>
+	  </center>
+	</div>
+</header>

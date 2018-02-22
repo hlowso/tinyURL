@@ -1,18 +1,33 @@
-var express = require("express");
+// *---------*
+// | MODULES |
+// *---------*
+
+const express = require("express");
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+const cookieSession = require('cookie-session');
 
-var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+// *--------------*
+// | SERVER SETUP |
+// *--------------*
 
+const app = express();
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieSession({
+  name: 'session',
+  secret: 'Listen... doo wah oooh... Do you want to know a secret?.. doo wah oooh'
+}));
+const PORT = process.env.PORT || 8080; 
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+// *---------------------*
+// | MY FUNCTIONS & DATA |
+// *---------------------*
 
 function generateRandomString() {
   const C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -23,64 +38,220 @@ function generateRandomString() {
   return key;
 }
 
+const urlDatabase = {
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "75hfgy"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "fhHu39"
+  }
+};
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
+function filterUrls(user_id) {
+  const user_urls = {};
+  for(let key in urlDatabase) {
+    if(urlDatabase[key].userID === user_id) {
+      user_urls[key] = urlDatabase[key].longURL;
+    }
+  }
+  return user_urls;
+}
+
+function findUserByEmail(email) {
+  let user;
+  for(let key in users) if(users[key].email === email) user = users[key];
+  return user;
+}
+
+function isLoggedIn(user_id) {
+  return (user_id in users);
+}
+
+// *----------*
+// | HANDLERS |
+// *----------*
+
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  if(isLoggedIn(req.session.user_id)) return res.redirect("/urls");
+  return res.redirect("/login");
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.get("/register", (req, res) => {
+  if(isLoggedIn(req.session.user_id)) return redirect("/urls");
+  res.render('register');
+});   
+
+app.post("/register", (req, res) => {
+  const incoming_email = req.body.email;
+  if(!incoming_email) return res.render('register', { empty_email: true });
+  const incoming_password = req.body.password;
+  if(!incoming_password) return res.render('register', {empty_password: true});
+  if(findUserByEmail(incoming_email)) return res.render('register', {email_already_exists: true});
+  const user_id = generateRandomString();
+  req.session.user_id = user_id;
+  users[user_id] = { id: user_id, email: incoming_email, password: bcrypt.hashSync(incoming_password, 10) };
+  return res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  let template_args = {};
+  if(isLoggedIn(req.session.user_id)) template_args = { user: users[req.session.user_id] };
+  res.render('login', template_args);
+});   
+
+app.post("/login", (req, res) => {
+  let template_args = {};
+  if(isLoggedIn(req.session.user_id)) template_args = { user: users[req.session.user_id] };
+
+  const incoming_email = req.body.email;
+  if(!incoming_email) {
+    template_args.empty_email = true;
+    return res.render('login', template_args);
+  }
+
+  const incoming_password = req.body.password;
+  if(!incoming_password) { 
+    template_args.empty_password = true;
+    return res.render('login', template_args);
+  }
+
+  const user = findUserByEmail(incoming_email);
+  if(!user || !bcrypt.compareSync(incoming_password, user.password)) {
+    template_args.bad_login = true;
+    return res.render('login', template_args);
+  }
+  
+  req.session.user_id = user.id;
+  return res.redirect("/urls"); 
+});
+
+app.post("/logout", (req, res) => {
+  req.session = null;
+  return res.redirect("/login");
 });
 
 app.get("/urls", (req, res) => {
-  res.render("urls_index", { urls: urlDatabase });
+  let template_args = {};
+  const user_id = req.session.user_id;
+  if(isLoggedIn(user_id)) {
+    template_args = {
+      user: users[user_id],
+      urls: filterUrls(user_id)
+    };
+    return res.render('urls_index', template_args);
+  }
+  res.status(401);
+  return res.render('error', {links: true, message: "401: You must be logged in to see your urls."});
 });
 
 app.post("/urls", (req, res) => {
-  let new_key = generateRandomString();
-  urlDatabase[new_key] = req.body.longURL;  
-  res.redirect(`/urls/${new_key}`);         
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  const user_id = req.session.user_id;
+  if(isLoggedIn(user_id)) {
+    let new_key = generateRandomString();
+    urlDatabase[new_key] = { longURL: req.body.longURL, userID: user_id };
+    return res.redirect(`/urls/${new_key}`); 
+  }
+  res.status(401);
+  return res.render('error', {links: true, message: "401: You must be logged in to create a url."});           
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let template_args;
+  if(isLoggedIn(req.session.user_id)) {
+    template_args = { user: users[req.session.user_id] };
+    return res.render('urls_new', template_args);
+  }
+  return res.redirect("/login");
 });
-
-function showProtocol(res, id) {
-  res.render("urls_show", { shortURL: id, urls: urlDatabase });
-}
 
 app.get("/urls/:id", (req, res) => {
-  showProtocol(res, req.params.id);
-});
-
-function deleteProtocol(res, id) {
-  delete urlDatabase[id];
-  res.render("urls_index", { urls: urlDatabase });
-}
-
-app.post("/urls/:id", (req, res) => {
-  let updated = req.body.updatedURL;
-  let key = req.params.id;
-  if(updated === undefined) { 
-    console.log("Here");
-    deleteProtocol(res, key);
+  const user_id = req.session.user_id;
+  if(isLoggedIn(user_id)) {
+    const url_id = req.params.id;
+    url = urlDatabase[url_id];
+    if(url === undefined){
+      res.status(404);
+      return res.render('error', {user: users[user_id], message: "404: url not found."}); 
+    }
+    if(url.userID !== user_id) {
+      res.status(403);
+      return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
+    }
+    template_args = {
+      url_id: url_id,
+      longURL: url.longURL
+    };
+    return res.render('urls_show', template_args);
   }
   else {
-    urlDatabase[key] = updated;
-    showProtocol(res, key);
+    res.status(401);
+    return res.render('error', {links: true, message: "401: You must be logged in to see this url."});        
   }
+});
+
+app.post("/urls/:id", (req, res) => {
+  const user_id = req.session.user_id;
+  if(isLoggedIn(user_id)) {
+    const updated = req.body.updatedURL;
+    const url_id = req.params.id;
+    url = urlDatabase[url_id];
+    if(url === undefined) {
+      res.status(404);
+      return res.render('error', {user: users[user_id], message: "404: url not found."}); 
+    }
+    if(url.userID !== user_id) {
+      res.status(403);
+      return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
+    }
+    url.longURL = updated;
+    return res.redirect("/urls");
+  }
+  res.status(401);
+  return res.render('error', {links: true, message: "401: You must be logged in to see this url."}); 
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+  if(!longURL.startsWith('http://') && !longURL.startsWith('https://')) longURL = 'http://' + longURL;
+  res.redirect(longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  deleteProtocol(res, req.params.id);
+  const user_id = req.session.user_id;
+  if(isLoggedIn(user_id)) {
+    const url_id = req.params.id;
+    url = urlDatabase[url_id];
+    if(url === undefined) {
+      res.status(404);
+      return res.render('error', {user: users[user_id], message: "404: url not found."}); 
+    }
+    if(url.userID !== user_id) {
+      res.status(403);
+      return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
+    }
+    delete urlDatabase[url_id];
+    return res.redirect("/urls");
+  }
+  res.status(401);
+  return res.render('error', {links: true, message: "401: You must be logged in to update a url."});
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+app.get("/urls.json", (req, res) => {
+  return res.json(urlDatabase);
 });
 

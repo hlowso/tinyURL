@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <% include ./partials/_header %>
+  <title>TinyApp</title>
 </head>
 <body>
-    <form action="/urls/<%= shortURL %>" method="post">
-    	<%=urls[shortURL]%> - <%=shortURL%> <input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update">
-    </form>
+	<form action="/urls/<%= url_id %>" method="post">
+		<%=url_id%> - <%=longURL%> <input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update">
+	</form>
 </body>
 </html>
