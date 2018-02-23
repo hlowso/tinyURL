@@ -8,10 +8,10 @@ Login to tinyURL to create cute, 6-character-long URL stand-ins for all of your 
 This project consists of 3 main components: third-party packages (located in /node_modules/), the server script (/express_server.js) and several EJS templates (located in /views/).
 
 ### Third party packages
-express (server engine)
-morgan (for http status logging)
-body-parser (self explanatory)
-bcrypt (password hashing)
+express (server engine),
+morgan (for http status logging),
+body-parser (self explanatory),
+bcrypt (password hashing),
 cookie-session (cookie encryption)
 
 ### express_server.js

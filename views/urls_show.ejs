@@ -6,9 +6,9 @@
 <body>
 	<% include ./partials/_header.ejs %>
 	<center>
-		<form action="/urls/<%= url_id %>" method="post">
-			<%=url_id%> - <%=longURL%> 
-			<input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update"><br>
+		<form action="/urls/<%= url.id %>" method="post">
+			<%=url.id%> - <%=url.longURL%> (created: <%=url.birthday%>)
+			<input name="updatedURL" type="text" placeholder="http://updated.url.com"><input type="submit" value="update"><br>
 			<% if(typeof url_empty !== 'undefined') { %><em>url field left empty<% } %>
 		</form>
 	</center>

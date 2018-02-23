@@ -1,7 +1,3 @@
-// *----------*
-// | PACKAGES |
-// *----------*
-
 const express = require("express");
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
@@ -138,7 +134,6 @@ app.get("/", (req, res) => {
   return res.redirect("/login");
 });
 
-
 // 2. URL FEATURES
 
 // Attempt to list short urls
@@ -164,7 +159,9 @@ app.post("/urls", (req, res) => {
     if(!longURL) 
       return res.render('urls_new', { user: users[user_id], url_empty: true });
 
-    urlDatabase[new_key] = { longURL: longURL, userID: user_id };
+    const exact_date = new Date();
+    const date = exact_date.getDate() + '/' + exact_date.getMonth() + 1 + '/' + exact_date.getFullYear();
+    urlDatabase[new_key] = { id: new_key, longURL: longURL, userID: user_id, birthday: date };
     return res.redirect(`/urls/${new_key}`); 
   }
 
@@ -197,7 +194,7 @@ app.get("/urls/:id", (req, res) => {
       return res.render('error', { user: users[user_id], message: "403: You are not the owner of this url." }); 
     }
 
-    return res.render('urls_show', { user: users[user_id], url_id: url_id, longURL: url.longURL });
+    return res.render('urls_show', { user: users[user_id], url: urlDatabase[url_id] });
   }
 
   else {
@@ -227,7 +224,7 @@ app.post("/urls/:id", (req, res) => {
     } 
 
     if(!updated) 
-      return res.render('urls_show', { user: users[user_id], url_empty: true, url_id: url_id, longURL: url.longURL });
+      return res.render('urls_show', { user: users[user_id], url_empty: true, url: urlDatabase[url_id] });
 
     url.longURL = updated;
     return res.redirect("/urls");
