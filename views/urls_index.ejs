@@ -9,7 +9,7 @@
 	  <% if(Object.keys(urls).length > 0) { %>
 			<% for(key in urls) { %>
 			  <form action="/urls/<%=key%>/delete" method="post">
-				<li><%=key%> - <%=urls[key].longURL%> (visits: <%=urls[key].total_visits%>, unique visits: <%= urls[key].unique_visitors.length%>, created: <%=urls[key].birthday%>)<br>
+				<li><%=key%> - <%=urls[key].long_url%> (visits: <%=urls[key].total_visits%>, unique visits: <%= urls[key].unique_visitors.length%>, created: <%=urls[key].birthday%>)<br>
 				<a href="/urls/<%=key%>">edit</a> <input type="submit" value="delete"></li>
 			  </form>
 			<% } %> 

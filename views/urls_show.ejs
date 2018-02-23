@@ -7,7 +7,7 @@
 	<% include ./partials/_header.ejs %>
 	<center>
 		<form action="/urls/<%= url.id %>" method="post">
-			<%=url.id%> - <%=url.longURL%> (visits: <%=url.total_visits%>, unique visits: <%= url.unique_visitors.length%>, created: <%=url.birthday%>)<br>
+			<%=url.id%> - <%=url.long_url%> (visits: <%=url.total_visits%>, unique visits: <%= url.unique_visitors.length%>, created: <%=url.birthday%>)<br>
 			<input name="updatedURL" type="text" placeholder="http://updated.url.com"><input type="submit" value="update"><br>
 			<% if(typeof url_empty !== 'undefined') { %><em>url field left empty<% } %>
 		</form>

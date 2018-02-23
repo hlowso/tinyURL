@@ -23,7 +23,7 @@ app.listen(PORT, () => {
 });
 
 // Declaration of data objects
-const urlDatabase = {};
+const url_database = {};
 const users = {};
 
 // *------------------*
@@ -41,9 +41,9 @@ function generateRandomString() {
 
 function filterUrls(user_id) {
   const user_urls = {};
-  for(let key in urlDatabase) {
-    if(urlDatabase[key].userID === user_id) {
-      user_urls[key] = urlDatabase[key];
+  for(let key in url_database) {
+    if(url_database[key].userID === user_id) {
+      user_urls[key] = url_database[key];
     }
   }
   return user_urls;
@@ -154,14 +154,14 @@ app.post("/urls", (req, res) => {
 
   if(isLoggedIn(user_id)) {
     const new_key = generateRandomString();
-    const longURL = req.body.longURL;
+    const long_url = req.body.long_url;
 
-    if(!longURL) 
+    if(!long_url) 
       return res.render('urls_new', { user: users[user_id], url_empty: true });
 
     const exact_date = new Date();
     const date = exact_date.getDate() + '/' + exact_date.getMonth() + 1 + '/' + exact_date.getFullYear();
-    urlDatabase[new_key] = { id: new_key, longURL: longURL, userID: user_id, birthday: date, total_visits: 0, unique_visitors: [] };
+    url_database[new_key] = { id: new_key, long_url: long_url, userID: user_id, birthday: date, total_visits: 0, unique_visitors: [] };
     return res.redirect(`/urls/${new_key}`); 
   }
 
@@ -182,7 +182,7 @@ app.get("/urls/:id", (req, res) => {
 
   if(isLoggedIn(user_id)) {
     const url_id = req.params.id;
-    url = urlDatabase[url_id];
+    url = url_database[url_id];
 
     if(url === undefined){
       res.status(404);
@@ -194,7 +194,7 @@ app.get("/urls/:id", (req, res) => {
       return res.render('error', { user: users[user_id], message: "403: You are not the owner of this url." }); 
     }
 
-    return res.render('urls_show', { user: users[user_id], url: urlDatabase[url_id] });
+    return res.render('urls_show', { user: users[user_id], url: url_database[url_id] });
   }
 
   else {
@@ -211,7 +211,7 @@ app.post("/urls/:id", (req, res) => {
 
     const updated = req.body.updatedURL;
     const url_id = req.params.id;
-    url = urlDatabase[url_id];
+    url = url_database[url_id];
 
     if(url === undefined) {
       res.status(404);
@@ -224,9 +224,9 @@ app.post("/urls/:id", (req, res) => {
     } 
 
     if(!updated) 
-      return res.render('urls_show', { user: users[user_id], url_empty: true, url: urlDatabase[url_id] });
+      return res.render('urls_show', { user: users[user_id], url_empty: true, url: url_database[url_id] });
 
-    url.longURL = updated;
+    url.long_url = updated;
     return res.redirect("/urls");
   }
 
@@ -235,8 +235,8 @@ app.post("/urls/:id", (req, res) => {
 });
 
 // Attempt to redirect user to the url pointed to by a short url
-app.get("/u/:shortURL", (req, res) => {
-  const url = urlDatabase[req.params.shortURL];
+app.get("/u/:short_url", (req, res) => {
+  const url = url_database[req.params.short_url];
   const user_id = req.session.user_id;
 
   if(!url) {
@@ -244,15 +244,15 @@ app.get("/u/:shortURL", (req, res) => {
     return res.render('error', { user: users[user_id], message: "404: url not found." }); 
   }
 
-  if(user_id !== undefined) {
-    url.total_visits += 1;
-    if(!url.unique_visitors.includes(user_id))
-      url.unique_visitors.push(user_id);
-  }
+  url.total_visits ++;
+  const visitor_id = req.connection.remoteAddress;
+  if(!url.unique_visitors.includes(visitor_id))
+    url.unique_visitors.push(visitor_id);
 
-  let longURL = url.longURL;
-  if(!longURL.startsWith('http://') && !longURL.startsWith('https://')) longURL = 'http://' + longURL;
-  res.redirect(longURL);
+  let long_url = url.long_url;
+  if(!long_url.startsWith('http://') && !long_url.startsWith('https://')) long_url = 'http://' + long_url;
+  res.status(303);
+  return res.redirect(long_url);
 });
 
 // Attempt to delete a short url
@@ -261,7 +261,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
   if(isLoggedIn(user_id)) {
     const url_id = req.params.id;
-    url = urlDatabase[url_id];
+    url = url_database[url_id];
 
     if(url === undefined) {
       res.status(404);
@@ -273,7 +273,7 @@ app.post("/urls/:id/delete", (req, res) => {
       return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
     }
 
-    delete urlDatabase[url_id];
+    delete url_database[url_id];
     return res.redirect("/urls");
   }
 

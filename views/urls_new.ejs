@@ -6,8 +6,8 @@
 	<% include ./partials/_header.ejs %>
 	<center>
 		<form action="/urls" method="POST">
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <label for="long_url">Enter a URL:</label>
+      <input id="long_url" type="text" name="long_url" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit"><br>
       <% if(typeof url_empty !== 'undefined') { %><em>url field left empty<% } %>
     </form>
