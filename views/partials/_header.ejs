@@ -1,6 +1,6 @@
 <header>
   <% if(typeof user !== 'undefined') { %><div style="float: right"><%=user.email%> <form action="/logout" method="post"><input type="submit" value="logout"></form></div>
-  <% } else if (typeof links !== 'undefined'){ %><div style="display: table-cell; float: right"><a href="/login">login</a><a href="/register">sign up</a></div><% } %>
+  <% } else if (typeof links !== 'undefined'){ %><div style="display: table-cell; float: right"><a href="/login">login</a> <a href="/register">sign up</a></div><% } %>
  	<div style="clear: right">
  		<center>
     	<h2>Tiny URL (ver 1.0.0)</h2>

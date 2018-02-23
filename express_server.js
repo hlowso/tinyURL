@@ -43,7 +43,7 @@ function filterUrls(user_id) {
   const user_urls = {};
   for(let key in urlDatabase) {
     if(urlDatabase[key].userID === user_id) {
-      user_urls[key] = urlDatabase[key].longURL;
+      user_urls[key] = urlDatabase[key];
     }
   }
   return user_urls;
@@ -161,7 +161,7 @@ app.post("/urls", (req, res) => {
 
     const exact_date = new Date();
     const date = exact_date.getDate() + '/' + exact_date.getMonth() + 1 + '/' + exact_date.getFullYear();
-    urlDatabase[new_key] = { id: new_key, longURL: longURL, userID: user_id, birthday: date };
+    urlDatabase[new_key] = { id: new_key, longURL: longURL, userID: user_id, birthday: date, total_visits: 0, unique_visitors: [] };
     return res.redirect(`/urls/${new_key}`); 
   }
 
@@ -237,13 +237,20 @@ app.post("/urls/:id", (req, res) => {
 // Attempt to redirect user to the url pointed to by a short url
 app.get("/u/:shortURL", (req, res) => {
   const url = urlDatabase[req.params.shortURL];
-  
+  const user_id = req.session.user_id;
+
   if(!url) {
     res.status(404);
     return res.render('error', { user: users[user_id], message: "404: url not found." }); 
   }
 
-  let longURL = urlDatabase[req.params.shortURL].longURL;
+  if(user_id !== undefined) {
+    url.total_visits += 1;
+    if(!url.unique_visitors.includes(user_id))
+      url.unique_visitors.push(user_id);
+  }
+
+  let longURL = url.longURL;
   if(!longURL.startsWith('http://') && !longURL.startsWith('https://')) longURL = 'http://' + longURL;
   res.redirect(longURL);
 });
