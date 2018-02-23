@@ -5,8 +5,8 @@ A little url shortner by Harry Lowson
 Login to tinyURL to create cute, 6-character-long URL stand-ins for all of your favourite URLS! Put em' in your tweets to free up space! Put em' in your facebook posts to save time! Put em' in your emails, cause, why not?
 
 ## Screenshots
-!["Login Page"](https://github.com/hlowso/tinyURL/blob/master/docs/login.png?raw=true)
-!["List of User URLs"](https://github.com/hlowso/tinyURL/blob/master/docs/urls_list.png?raw=true)
+["Login Page"](https://github.com/hlowso/tinyURL/blob/master/docs/login.png?raw=true)
+["List of User URLs"](https://github.com/hlowso/tinyURL/blob/master/docs/urls_list.png?raw=true)
 
 ## File and Code Structure
 Apart from Node.js, this project consists of 3 main components: third-party packages (located in /node_modules/), the server script (/express_server.js) and several EJS templates (located in /views/).
