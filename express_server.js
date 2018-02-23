@@ -141,6 +141,8 @@ app.get("/urls", (req, res) => {
   let template_args = {};
   const user_id = req.session.user_id;
 
+  console.log(user_id);
+
   if(isLoggedIn(user_id)) 
     return res.render('urls_index', { user: users[user_id], urls: filterUrls(user_id) });
 
