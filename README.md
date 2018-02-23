@@ -1,2 +1,2 @@
 # tinyURL 
-An little url shortner by Harry Lowson
+A little url shortner by Harry Lowson

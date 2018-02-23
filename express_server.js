@@ -140,10 +140,16 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+
   const user_id = req.session.user_id;
   if(isLoggedIn(user_id)) {
-    let new_key = generateRandomString();
-    urlDatabase[new_key] = { longURL: req.body.longURL, userID: user_id };
+
+    const new_key = generateRandomString();
+    const longURL = req.body.longURL;
+    if(!longURL) 
+      return res.render('urls_new', { user: users[user_id], url_empty: true });
+
+    urlDatabase[new_key] = { longURL: longURL, userID: user_id };
     return res.redirect(`/urls/${new_key}`); 
   }
   res.status(401);
@@ -151,11 +157,8 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let template_args;
-  if(isLoggedIn(req.session.user_id)) {
-    template_args = { user: users[req.session.user_id] };
-    return res.render('urls_new', template_args);
-  }
+  if(isLoggedIn(req.session.user_id)) 
+    return res.render('urls_new', { user: users[req.session.user_id] });
   return res.redirect("/login");
 });
 
@@ -166,41 +169,43 @@ app.get("/urls/:id", (req, res) => {
     url = urlDatabase[url_id];
     if(url === undefined){
       res.status(404);
-      return res.render('error', {user: users[user_id], message: "404: url not found."}); 
+      return res.render('error', { user: users[user_id], message: "404: url not found." }); 
     }
     if(url.userID !== user_id) {
       res.status(403);
-      return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
+      return res.render('error', { user: users[user_id], message: "403: You are not the owner of this url." }); 
     }
-    template_args = {
-      url_id: url_id,
-      longURL: url.longURL
-    };
-    return res.render('urls_show', template_args);
+    return res.render('urls_show', { user: users[user_id], url_id: url_id, longURL: url.longURL });
   }
   else {
     res.status(401);
-    return res.render('error', {links: true, message: "401: You must be logged in to see this url."});        
+    return res.render('error', { links: true, message: "401: You must be logged in to see this url." });        
   }
 });
 
 app.post("/urls/:id", (req, res) => {
+
   const user_id = req.session.user_id;
   if(isLoggedIn(user_id)) {
+
     const updated = req.body.updatedURL;
     const url_id = req.params.id;
     url = urlDatabase[url_id];
     if(url === undefined) {
       res.status(404);
-      return res.render('error', {user: users[user_id], message: "404: url not found."}); 
+      return res.render('error', { user: users[user_id], message: "404: url not found." }); 
     }
     if(url.userID !== user_id) {
       res.status(403);
-      return res.render('error', {user: users[user_id], message: "403: You are not the owner of this url."}); 
-    }
+      return res.render('error', { user: users[user_id], message: "403: You are not the owner of this url." }); 
+    } 
+    if(!updated) 
+      return res.render('urls_show', { user: users[user_id], url_empty: true, url_id: url_id, longURL: url.longURL });
+
     url.longURL = updated;
     return res.redirect("/urls");
   }
+
   res.status(401);
   return res.render('error', {links: true, message: "401: You must be logged in to see this url."}); 
 });
