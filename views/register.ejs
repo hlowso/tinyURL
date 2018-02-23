@@ -5,13 +5,16 @@
 </head>
 <body>
   <% include ./partials/_header.ejs %>
-  <form action="/register" method="post">
-  	<input type="email" name="email" placeholder="example@gmail.com"><br>
-  	<input type="password" name="password"><br>
-  	<input type="submit" value="enter"><br>
-  	<% if(typeof empty_email !== 'undefined') { %><em>email field left empty</em><% } %>
-  	<% if(typeof empty_password !== 'undefined') { %><em>password field left empty</em><% } %>
-  	<% if(typeof email_already_exists !== 'undefined') { %><em>email already in use</em><% } %>
-  </form>
+  <center>
+  	<p>Registration</p><br>
+	  <form action="/register" method="post">
+	  	username: <input type="email" name="email" placeholder="example@gmail.com"><br>
+	  	password: <input type="password" name="password"><br>
+	  	<input type="submit" value="sign up"><br>
+	  	<% if(typeof empty_email !== 'undefined') { %><em>email field left empty</em><% } %>
+	  	<% if(typeof empty_password !== 'undefined') { %><em>password field left empty</em><% } %>
+	  	<% if(typeof email_already_exists !== 'undefined') { %><em>email already in use</em><% } %>
+	  </form>
+	</center>
 </body>
 </html>

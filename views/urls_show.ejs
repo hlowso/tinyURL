@@ -4,8 +4,11 @@
   <title>TinyApp</title>
 </head>
 <body>
-	<form action="/urls/<%= url_id %>" method="post">
-		<%=url_id%> - <%=longURL%> <input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update">
-	</form>
+	<% include ./partials/_header.ejs %>
+	<center>
+		<form action="/urls/<%= url_id %>" method="post">
+			<%=url_id%> - <%=longURL%> <input name="updatedURL" type="text" placeholder="http://change.url.here.com"> <input type="submit" value="update">
+		</form>
+	</center>
 </body>
 </html>

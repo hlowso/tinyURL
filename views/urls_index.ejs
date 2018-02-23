@@ -5,15 +5,17 @@
 </head>
 <body>
   <% include ./partials/_header.ejs %>
-  <% if(Object.keys(urls).length > 0) { %>
-		<% for(key in urls) { %>
-		  <form action="/urls/<%=key%>/delete" method="post">
-			<li><%=key%> - <%=urls[key]%> <a href="/urls/<%=key%>">edit</a> <input type="submit" value="delete"></li>
-		  </form>
-		<% } %> 
-  <% } else { %>
-  	<p> You don't have any urls. Click the link below to begin. </p>
-  <% } %>
-	<a href="/urls/new">Shorten New Url</a>
+  <center>
+	  <% if(Object.keys(urls).length > 0) { %>
+			<% for(key in urls) { %>
+			  <form action="/urls/<%=key%>/delete" method="post">
+				<li><%=key%> - <%=urls[key]%> <a href="/urls/<%=key%>">edit</a> <input type="submit" value="delete"></li>
+			  </form>
+			<% } %> 
+	  <% } else { %>
+	  	<p> You don't have any urls. Click the link below to begin. </p>
+	  <% } %>
+		<a href="/urls/new">Shorten New Url</a>
+  </center>
 </body>
 </html>

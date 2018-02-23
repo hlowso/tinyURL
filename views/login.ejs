@@ -6,15 +6,16 @@
 <body>
   <% include ./partials/_header.ejs %>
   <center>
-  <form action="/login" method="post">
-  	Username: <input type="email" name="email"><br>
-  	Password: <input type="password" name="password"><br>
-  	<input type="submit" value="enter"><br>
-  	<% if(typeof empty_email !== 'undefined') { %><em>email field left empty</em><% } %>
-  	<% if(typeof empty_password !== 'undefined') { %><em>password field left empty</em><% } %>
-  	<% if(typeof bad_login !== 'undefined') { %><em>email or password incorrect</em><% } %>
-  </form>
-  <a href="/register">New here?</a>
+  	<p>login</p><br>
+	  <form action="/login" method="post">
+	  	username: <input type="email" name="email"><br>
+	  	password: <input type="password" name="password"><br>
+	  	<input type="submit" value="enter"><br>
+	  	<% if(typeof empty_email !== 'undefined') { %><em>email field left empty</em><% } %>
+	  	<% if(typeof empty_password !== 'undefined') { %><em>password field left empty</em><% } %>
+	  	<% if(typeof bad_login !== 'undefined') { %><em>email or password incorrect</em><% } %>
+	  </form>
+	  <a href="/register">New here?</a>
   </center>
 </body>
 </html>

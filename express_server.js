@@ -25,9 +25,13 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// *---------------------*
-// | MY FUNCTIONS & DATA |
-// *---------------------*
+// Declaration of data objects
+const urlDatabase = {};
+const users = {};
+
+// *------------------*
+// | USEFUL FUNCTIONS |
+// *------------------*
 
 function generateRandomString() {
   const C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -37,30 +41,6 @@ function generateRandomString() {
   }
   return key;
 }
-
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "75hfgy"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "fhHu39"
-  }
-};
-
-const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
-};
 
 function filterUrls(user_id) {
   const user_urls = {};
